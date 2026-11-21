@@ -163,6 +163,7 @@ footer{background:var(--lapis);color:#d3d9ea;font-size:14px}footer a{color:var(-
 .thtip.below::after{bottom:auto;top:-7px;transform:rotate(225deg)}.thx{position:absolute;top:4px;right:4px;width:30px;height:30px;border:0;background:none;color:var(--mute);font-size:20px;cursor:pointer;border-radius:6px}.thx:hover{background:var(--line)}
 #themes{position:relative}
 .mlbl{font-family:"Work Sans",sans-serif;font-weight:600;fill:var(--ink);paint-order:stroke;stroke:var(--land);pointer-events:none}
+.mhit{fill:transparent;pointer-events:all;cursor:pointer}
 #mapsvg{touch-action:pan-x pan-y;cursor:grab}#mapsvg:active{cursor:grabbing}
 .mzb{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:6px;z-index:2}.mzb button{width:40px;height:40px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:600 22px/1 "Work Sans",sans-serif;cursor:pointer;display:grid;place-items:center;box-shadow:0 2px 6px rgba(0,0,0,.12)}
 .mzb button:focus-visible{outline:3px solid var(--gold)}
@@ -472,7 +473,7 @@ function svgLabels(svg,vb,items,minR,slice){
  const ppu=slice?Math.max(W/vb[2],H/vb[3]):Math.min(W/vb[2],H/vb[3]),z=Math.min(Math.max((window.visualViewport&&visualViewport.scale)||1,1),8),sc=ppu*z,fs=12/sc,sw=3/sc,g=3/sc;
  const vw=W/ppu,vh=H/ppu,cx=vb[0]+vb[2]/2,cy=vb[1]+vb[3]/2,vis=[cx-vw/2,cy-vh/2,cx+vw/2,cy+vh/2];
  const boxes=[],out=[],ov=(b,o)=>b[0]<o[2]&&b[2]>o[0]&&b[1]<o[3]&&b[3]>o[1];
- const big=items.filter(it=>it.r*sc>=6).map(it=>[it.x-it.r*.85,it.y-it.r*.85,it.x+it.r*.85,it.y+it.r*.85,it]);
+ const big=items.filter(it=>it.r*sc>=2.5).map(it=>[it.x-it.r*.85,it.y-it.r*.85,it.x+it.r*.85,it.y+it.r*.85,it]);
  let cur=null;const hit=b=>boxes.some(o=>ov(b,o))||big.some(o=>o[4]!==cur&&ov(b,o));
  for(const it of items){cur=it;if(out.length>=400)break;const {x,y,r,name,key}=it;
   if(x<vis[0]||x>vis[2]||y<vis[1]||y>vis[3])continue;if(!key&&r*sc<minR)continue;
@@ -480,7 +481,8 @@ function svgLabels(svg,vb,items,minR,slice){
   const cand=[[x+r+g,y+fs*.35,'start',[x+r+g,y-a+fs*.35,x+r+g+w,y+d+fs*.35]],[x-r-g,y+fs*.35,'end',[x-r-g-w,y-a+fs*.35,x-r-g,y+d+fs*.35]],
    [x,y-r-g,'middle',[x-w/2,y-r-g-a,x+w/2,y-r-g+d]],[x,y+r+g+a,'middle',[x-w/2,y+r+g,x+w/2,y+r+g+a+d]]];
   let pk=cand.find(c=>!hit(c[3]));if(!pk){if(!key)continue;pk=cand[0]}
-  boxes.push(pk[3]);out.push(`<text class="mlbl" x="${pk[0].toFixed(2)}" y="${pk[1].toFixed(2)}" text-anchor="${pk[2]}" style="font-size:${fs.toFixed(3)}px;stroke-width:${sw.toFixed(3)}px">${esc(name)}</text>`)}
+  boxes.push(pk[3]);if(it.i!=null){const q=pk[3];out.push(`<rect class="mhit" data-l="${it.i}" x="${q[0].toFixed(2)}" y="${q[1].toFixed(2)}" width="${(q[2]-q[0]).toFixed(2)}" height="${(q[3]-q[1]).toFixed(2)}"/>`)}
+  out.push(`<text class="mlbl" x="${pk[0].toFixed(2)}" y="${pk[1].toFixed(2)}" text-anchor="${pk[2]}" style="font-size:${fs.toFixed(3)}px;stroke-width:${sw.toFixed(3)}px">${esc(name)}</text>`)}
  return out.join('')}
 let MINI=null,MLAB=null;
 function relabelMaps(){if(MLAB){const g=document.getElementById('mlab');if(g)g.innerHTML=svgLabels($('#mapsvg'),MLAB.vb,MLAB.items,3.2,false)}
@@ -498,7 +500,7 @@ function miniRender(){
  if(!MINI)return;const m=$('#minimap'),vb=MINI.vb,W=m.clientWidth||300,H=m.clientHeight||250,ppu=Math.min(W/vb[2],H/vb[3]),u=1/ppu,r=5.5*u;
  m.innerHTML=`<svg viewBox="${vb.join(' ')}" preserveAspectRatio="xMidYMid meet"><rect x="-500" y="-500" width="2500" height="2000" fill="var(--sea)"/><path d="${MAP.d}" fill="var(--land)" stroke="var(--coast)" stroke-width="${(.8*u).toFixed(3)}"/>${MINI.pts.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="${r.toFixed(3)}" fill="var(--red)" stroke="var(--land)" stroke-width="${(1.2*u).toFixed(3)}" data-l="${p.i}" style="cursor:pointer"><title>${esc(ln(p.i))}</title></circle>`).join('')}<g id="minilab"></g></svg>
  <div class="mzb mini-z"><button type="button" data-mm="in" aria-label="+">+</button><button type="button" data-mm="out" aria-label="−">−</button><button type="button" data-mm="reset" aria-label="Reset"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M4 12a8 8 0 1 0 2.4-5.7M4 4v5h5" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button></div>`;
- MINI.items=MINI.pts.map(p=>({x:p.x,y:p.y,r,name:ln(p.i),key:false}));relabelMaps();
+ MINI.items=MINI.pts.map(p=>({i:p.i,x:p.x,y:p.y,r,name:ln(p.i),key:false}));relabelMaps();
 }
 function initMiniZoom(){
  const m=$('#minimap');let T=null,pend=null;
@@ -665,10 +667,10 @@ function drawMap(){
  const pts=PL.map(p=>({p,n:count(p)})).filter(x=>x.n>0).sort((a,b)=>b.n-a.n);
  $('#mapsvg').setAttribute('viewBox',vb.join(' '));
  $('#mapsvg').innerHTML=`<rect x="-400" y="-400" width="1800" height="1400" fill="var(--sea)"/><path d="${MAP.d}" fill="var(--land)" stroke="var(--coast)" stroke-width="${(.8*u).toFixed(3)}"/>
- ${pts.slice().reverse().map(({p,n})=>`<circle data-l="${p.i}" cx="${p.x}" cy="${p.y}" r="${rr(n).toFixed(3)}" fill="${tcol(p.ty)}" fill-opacity="${JR!=null?'.22':'.72'}" stroke="${p.i==PSEL?'var(--ink)':'var(--land)'}" stroke-width="${((p.i==PSEL?2.5:.6)*u).toFixed(3)}" style="cursor:pointer"><title>${esc(ln(p.i))}: ${n}</title></circle>`).join('')}
+ ${pts.map(({p,n})=>`<circle data-l="${p.i}" cx="${p.x}" cy="${p.y}" r="${rr(n).toFixed(3)}" fill="${tcol(p.ty)}" fill-opacity="${JR!=null?'.22':'.72'}" stroke="${p.i==PSEL?'var(--ink)':'var(--land)'}" stroke-width="${((p.i==PSEL?2.5:.6)*u).toFixed(3)}" style="cursor:pointer"><title>${esc(ln(p.i))}: ${n}</title></circle>`).join('')}
  <g id="mlab"></g>${routeSvg(u*1.1)}`;
  const rs=JR!=null?new Set(ROUTES[JR]):null;
- MLAB={vb,items:pts.map(({p,n})=>({x:p.x,y:p.y,r:rr(n),name:ln(p.i),key:p.i==PSEL||(rs&&rs.has(p.i)),n})).sort((a,b)=>b.key-a.key||b.n-a.n)};relabelMaps();
+ MLAB={vb,items:pts.map(({p,n})=>({i:p.i,x:p.x,y:p.y,r:rr(n),name:ln(p.i),key:p.i==PSEL||(rs&&rs.has(p.i)),n})).sort((a,b)=>b.key-a.key||b.n-a.n)};relabelMaps();
  if(!pts.length)$('#mapsvg').insertAdjacentHTML('beforeend',`<text x="${vb[0]+vb[2]/2}" y="${vb[1]+vb[3]/2}" text-anchor="middle" style="font-size:${16*u}px">${t('noMap')}</text>`);
 }
 let MAPT=null,MDRAG=false;
