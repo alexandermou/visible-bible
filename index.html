@@ -83,6 +83,7 @@ button,select,input{font:inherit;font-size:16px}
 select,input[type=search]{min-height:44px;padding:8px 12px;border-radius:8px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
 .ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:14px 0}
 .note{font-size:14px;color:var(--mute)}
+.nomatch{display:inline-block;margin-top:2px;padding:8px 12px;border-radius:8px;background:#fbe9e7;color:#9b2c1c;border:1px solid #e8b4ab;font-weight:600;font-size:15px}
 .alt{background:light-dark(#f1eee6,#111a2e)}
 /* reader */
 .chs{display:flex;flex-wrap:wrap;gap:3px;margin:8px 0 16px}
@@ -595,9 +596,9 @@ function initNet(){
  initNetZoom();
  $('#psearch').oninput=e=>{const q=e.target.value.trim().toLowerCase();if(q.length<(/[一-鿿]/.test(q)?1:2)){$('#sugg').innerHTML='';return}
   const r=[];for(let i=0;i<PE.length&&r.length<8;i++)if(PE[i].n.toLowerCase().includes(q)||(Z&&Z.P[i]&&Z.P[i][0].toLowerCase().includes(q)))r.push(i);
-  $('#sugg').innerHTML=r.length?r.map(i=>`<button data-p="${i}">${esc(pn(i))} <span class="note">· ${PE[i].v}${LX().nsp?'':' '}${t('verses')}${PE[i].y!=null?' · '+esc(en(eraOf(PE[i].y))):''}</span></button>`).join(''):`<span class="note">${t('nomatch')}</span>`};
+  $('#sugg').innerHTML=r.length?r.map(i=>`<button data-p="${i}">${esc(pn(i))} <span class="note">· ${PE[i].v}${LX().nsp?'':' '}${t('verses')}${PE[i].y!=null?' · '+esc(en(eraOf(PE[i].y))):''}</span></button>`).join(''):`<span class="nomatch" role="status">${t('nomatch')}</span>`};
  const go=()=>{$('#psearch').oninput({target:$('#psearch')});const b=$('#sugg button');if(b)b.click()};$('#psgo').onclick=go;$('#psearch').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();go()}};
- const mkS=(inp,sg,go,find,rend,pick)=>{const run=()=>{const q=$(inp).value.trim().toLowerCase();if(q.length<(/[一-鿿]/.test(q)?1:2)){$(sg).innerHTML='';return[]}const r=find(q);$(sg).innerHTML=r.length?r.map(rend).join(''):`<span class="note">${t('nomatch')}</span>`;return r};
+ const mkS=(inp,sg,go,find,rend,pick)=>{const run=()=>{const q=$(inp).value.trim().toLowerCase();if(q.length<(/[一-鿿]/.test(q)?1:2)){$(sg).innerHTML='';return[]}const r=find(q);$(sg).innerHTML=r.length?r.map(rend).join(''):`<span class="nomatch" role="status">${t('nomatch')}</span>`;return r};
   $(inp).oninput=run;$(go).onclick=()=>{const r=run();if(r.length){pick(r[0]);$(sg).innerHTML=''}};$(inp).onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$(go).click()}};
   $(sg).onclick=e=>{const b=e.target.closest('button[data-s]');if(b){pick(+b.dataset.s);$(sg).innerHTML=''}}};
  mkS('#msearch','#msugg','#msgo',q=>PL.filter(p=>(ln(p.i)+' '+(Z&&Z.L[p.i]?Z.L[p.i][1].join(' '):'')+' '+PN[p.i]).toLowerCase().includes(q)).sort((a,b)=>b.v-a.v).slice(0,8).map(p=>p.i),i=>{const p=PLI[i];return `<button data-s="${i}">${esc(ln(i))} <span class="note">· ${esc(t('lab')[p.ty]||p.ty)} · ${p.v}${LX().nsp?'':' '}${t('verses')}</span></button>`},i=>selectPlace(i,true));
