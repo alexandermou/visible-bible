@@ -295,7 +295,7 @@ nav.top a{color:#fff;text-decoration:none;padding:14px 10px;white-space:nowrap;f
 .legend i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:6px;vertical-align:-1px}
 .hero .legend{color:#d3d9ea}
 .bookcard{margin-top:22px;background:#0f1d45;border:1px solid #2d3f78;border-radius:10px;padding:18px 20px;display:grid;gap:8px 28px;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
-.ctl.bsel{margin:18px 0 6px}.bsel label{font-weight:600;font-size:18px}.bsel+.bookcard{margin-top:0}
+.ctl.bsel{margin:18px 0 6px}.rbname{font-size:18px;margin-right:6px}.bsel label{font-weight:600;font-size:18px}.bsel+.bookcard{margin-top:0}
 .bookcard h3{color:#fff;margin:0}.bookcard .k{color:#b9c2dc;font-size:14px}
 .stats{display:flex;flex-wrap:wrap;gap:6px 22px;margin:6px 0}.stats div{font-size:13px;color:#b9c2dc}.stats b{display:block;font-size:24px;color:#fff;font-family:"Cormorant Garamond",serif}
 @media(max-width:700px){.bookcard{grid-template-columns:minmax(0,1fr)}}
@@ -422,7 +422,7 @@ footer{background:var(--lapis);color:#d3d9ea;font-size:14px}footer a{color:var(-
 <section id="read" class="band"><div class="wrap">
 <h2 data-i="rh">Read with the cast beside you</h2>
 <p data-i="rp">Pick any chapter. Named people are underlined in blue and places in red; tap one to see who or where it is. The squares show each chapter; darker means more named people.</p>
-<div class="ctl"><button class="btn" id="rprev" data-i="prev">Previous chapter</button><button class="btn" id="rnext" data-i="next">Next chapter</button></div>
+<div class="ctl"><b class="rbname" id="rbname"></b><button class="btn" id="rprev" data-i="prev">Previous chapter</button><button class="btn" id="rnext" data-i="next">Next chapter</button></div>
 <div class="chs" id="chs"></div>
 <div class="reader"><article class="text" id="text"><div class="loading">Loading…</div></article>
 <aside class="side"><div class="box"><h4 data-i="who">Who appears in this chapter</h4><div id="chpeople"></div></div>
@@ -665,7 +665,7 @@ const ref=s=>{const m=/^(\w+)\.(\d+)\.(\d+)/.exec(s||'');if(!m)return '';const b
 let CB=0;
 function pickBook(i){HL=true;showBook(i);openRead(i,LAST[i]||1,false)}
 function showBook(i){
- CB=i;$('#bsel').value=i;const b=BK[i];document.querySelectorAll('.bk').forEach(x=>x.classList.toggle('on',HL&&+x.dataset.b==i));
+ CB=i;$('#bsel').value=i;$('#rbname').textContent=bn(i);const b=BK[i];document.querySelectorAll('.bk').forEach(x=>x.classList.toggle('on',HL&&+x.dataset.b==i));
  const w=b.w.map(x=>{const k=PE.findIndex(p=>p.n==x);return k>=0?pn(k):x});
  $('#bookcard').innerHTML=`<div><div class="k">${b.t?t('testNT'):t('testOT')} · ${esc(dn(b.div))} · ${t('bookOf')(i+1)}</div><h3>${esc(bn(i))}</h3>
  <div class="stats"><div><b>${b.ch}</b>${t('chapters')}</div><div><b>${fmt(b.v)}</b>${t('verses')}</div><div><b>${fmt(b.pc)}</b>${t('ptags')}</div><div><b>${fmt(b.lc)}</b>${t('ltags')}</div></div>
