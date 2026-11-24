@@ -101,6 +101,7 @@ nav.top a{color:#fff;text-decoration:none;padding:14px 10px;white-space:nowrap;f
 .legend i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:6px;vertical-align:-1px}
 .hero .legend{color:#d3d9ea}
 .bookcard{margin-top:22px;background:#0f1d45;border:1px solid #2d3f78;border-radius:10px;padding:18px 20px;display:grid;gap:8px 28px;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
+.ctl.bsel{margin:18px 0 6px}.bsel label{font-weight:600;font-size:18px}.bsel+.bookcard{margin-top:0}
 .bookcard h3{color:#fff;margin:0}.bookcard .k{color:#b9c2dc;font-size:14px}
 .stats{display:flex;flex-wrap:wrap;gap:6px 22px;margin:6px 0}.stats div{font-size:13px;color:#b9c2dc}.stats b{display:block;font-size:24px;color:#fff;font-family:"Cormorant Garamond",serif}
 @media(max-width:700px){.bookcard{grid-template-columns:minmax(0,1fr)}}
@@ -220,13 +221,14 @@ footer{background:var(--lapis);color:#d3d9ea;font-size:14px}footer a{color:var(-
 <p class="lead" data-i="lead">66 books, 1,189 chapters, 31,102 verses, about 3,000 named people and 1,200 mapped places. Each bar below is one book, drawn to its true length. Tap one to start.</p>
 <div class="shelf" id="shelf"><div><h4 data-i="ot">Old Testament · 39 books · 23,145 verses</h4><div class="hbs" id="shOT" role="list"></div></div><div><h4 data-i="nt">New Testament · 27 books · 7,957 verses</h4><div class="hbs" id="shNT" role="list"></div></div></div>
 <ul class="legend" id="divleg"></ul>
+<div class="ctl bsel"><label for="bsel" id="bsellab">Read</label><select id="bsel" aria-label="Book"></select></div>
 <div class="bookcard" id="bookcard" aria-live="polite"></div>
 </div></section>
 
 <section id="read" class="band"><div class="wrap">
 <h2 data-i="rh">Read with the cast beside you</h2>
 <p data-i="rp">Pick any chapter. Named people are underlined in blue and places in red; tap one to see who or where it is. The squares show each chapter; darker means more named people.</p>
-<div class="ctl"><select id="rbook" aria-label="Book"></select><button class="btn" id="rprev" data-i="prev">Previous chapter</button><button class="btn" id="rnext" data-i="next">Next chapter</button></div>
+<div class="ctl"><button class="btn" id="rprev" data-i="prev">Previous chapter</button><button class="btn" id="rnext" data-i="next">Next chapter</button></div>
 <div class="chs" id="chs"></div>
 <div class="reader"><article class="text" id="text"><div class="loading">Loading…</div></article>
 <aside class="side"><div class="box"><h4 data-i="who">Who appears in this chapter</h4><div id="chpeople"></div></div>
@@ -440,16 +442,16 @@ function applyStatic(){syncUrl();if((L=='zh'||L=='zht')&&!window.__nsc){window._
  $('#eraleg').innerHTML=ERAS.map((e,i)=>`<li><i style="background:var(--e${i})"></i>${esc(en(i))}</li>`).join('');
  $('#typeleg').innerHTML=['var(--red)','var(--gold)','var(--e6)','var(--e4)','var(--eN)'].map((c,i)=>`<li><i style="background:${c};border-radius:50%"></i>${t('types')[i]}</li>`).join('');
  const mx=Math.max(...BK.map(b=>b.v));
- const shRow=(b,i)=>`<button class="hb bk${i==CB?' on':''}" role="listitem" data-b="${i}" aria-label="${esc(bn(i))}, ${b.v}${LX().nsp?'':' '}${t('verses')}" title="${esc(bn(i))} · ${fmt(b.v)}${LX().nsp?'':' '}${t('verses')}"><span class="n">${esc(bn(i))}</span><span class="tr"><span class="f" style="width:calc((100% - 3.6em)*${(b.v/mx).toFixed(4)});background:var(--d${DIVS.indexOf(b.div)})"></span><span class="v">${fmt(b.v)}</span></span></button>`;
+ const shRow=(b,i)=>`<button class="hb bk${HL&&i==CB?' on':''}" role="listitem" data-b="${i}" aria-label="${esc(bn(i))}, ${b.v}${LX().nsp?'':' '}${t('verses')}" title="${esc(bn(i))} · ${fmt(b.v)}${LX().nsp?'':' '}${t('verses')}"><span class="n">${esc(bn(i))}</span><span class="tr"><span class="f" style="width:calc((100% - 3.6em)*${(b.v/mx).toFixed(4)});background:var(--d${DIVS.indexOf(b.div)})"></span><span class="v">${fmt(b.v)}</span></span></button>`;
  {const lw=Math.min(170,Math.ceil(Math.max(...BK.map((b,i)=>tw(bn(i))))*12.5/11)+6)+'px';$('#shOT').style.setProperty('--lw',lw);$('#shNT').style.setProperty('--lw',lw)}$('#shOT').innerHTML=BK.slice(0,39).map((b,i)=>shRow(b,i)).join('');$('#shNT').innerHTML=BK.slice(39).map((b,i)=>shRow(b,i+39)).join('');
- const rv=$('#rbook').value;$('#rbook').innerHTML=BK.map((b,i)=>`<option value="${i}">${esc(bn(i))}</option>`).join('');$('#rbook').value=rv||0;
+ $('#bsel').innerHTML=BK.map((b,i)=>`<option value="${i}">${esc(bn(i))}</option>`).join('');$('#bsel').value=CB;$('#bsellab').textContent=t('read');
  const mv=$('#mfilter').value;$('#mfilter').innerHTML=`<option value="all">${t('whole')}</option><option value="ot">${t('ot')}</option><option value="nt">${t('nt')}</option>`+BK.map((b,i)=>`<option value="b${i}">${esc(bn(i))}</option>`).join('');$('#mfilter').value=mv||'all';
 }
 function render(){applyStatic();if(kingsDraw)kingsDraw();jRender();if(stageDraw)stageDraw();if(themeDraw)themeDraw();showBook(CB);openRead(RB,RC,false);if(netDraw)netDraw();if(SEL!=null)selectPerson(SEL,false);if(lifeDraw)lifeDraw();setEra(ERA,true);drawMap();if(PSEL!=null)selectPlace(PSEL,false);initPatterns()}
 
 function init(){
- $('#shelf').onclick=e=>{const b=e.target.closest('.bk');if(b)showBook(+b.dataset.b)};
- $('#rbook').onchange=e=>openRead(+e.target.value,1,false);
+ $('#shelf').onclick=e=>{const b=e.target.closest('.bk');if(b)pickBook(+b.dataset.b)};
+ $('#bsel').onchange=e=>pickBook(+e.target.value);
  $('#rprev').onclick=()=>step(-1);$('#rnext').onclick=()=>step(1);
  $('#lang').onchange=async e=>{L=e.target.value;try{localStorage.setItem('bs-lang',L)}catch(x){}try{await ensureMeta()}catch(x){L='en';Z=null}render()};
  document.body.addEventListener('click',e=>{const mb=e.target.closest('.bio-more');if(!mb)return;const r=mb.parentElement.querySelector('.bio-rest'),o=r.hidden;r.hidden=!o;mb.textContent=(RDL[L]||RDL.en)[o?1:0];mb.setAttribute('aria-expanded',o?'true':'false')});
@@ -459,7 +461,7 @@ function init(){
   else{const [b,c]=el.dataset.go.split(':');openRead(+b,+c||1,true)}});
  applyStatic();
  initNet();initTime();initMap();initFam();initKings();initJourneys();initStage();
- SEL=PE.findIndex(p=>p.n=='Moses');PSEL=PL[0].i;
+ SEL=PE.findIndex(p=>p.n=='Moses');PSEL=PL[0].i;loadPos();
  ensureMeta().catch(()=>{L='en';Z=null}).then(render).then(()=>{fixNav();const h=location.hash.slice(1),e=h&&document.getElementById(h);if(e){const go=()=>e.scrollIntoView({block:'start',behavior:'instant'});go();const y=scrollY;setTimeout(()=>{if(Math.abs(scrollY-y)<5)go()},600)}});
 }
 const chip=(i,extra='')=>{const p=PE[i];return p?`<button class="chip" data-p="${i}"><i style="background:${ecol(eraOf(p.y))}"></i>${esc(pn(i))}${extra}</button>`:''};
@@ -467,19 +469,23 @@ const pchip=i=>`<button class="chip" data-l="${i}">${esc(ln(i))}</button>`;
 const ref=s=>{const m=/^(\w+)\.(\d+)\.(\d+)/.exec(s||'');if(!m)return '';const b=BK.findIndex(x=>x.o==m[1]);return b<0?'':`<button class="chip" data-go="${b}:${m[2]}">${esc(bn(b))} ${m[2]}:${m[3]}</button>`};
 
 let CB=0;
+function pickBook(i){HL=true;showBook(i);openRead(i,LAST[i]||1,false)}
 function showBook(i){
- CB=i;const b=BK[i];document.querySelectorAll('.bk').forEach(x=>x.classList.toggle('on',+x.dataset.b==i));
+ CB=i;$('#bsel').value=i;const b=BK[i];document.querySelectorAll('.bk').forEach(x=>x.classList.toggle('on',HL&&+x.dataset.b==i));
  const w=b.w.map(x=>{const k=PE.findIndex(p=>p.n==x);return k>=0?pn(k):x});
  $('#bookcard').innerHTML=`<div><div class="k">${b.t?t('testNT'):t('testOT')} · ${esc(dn(b.div))} · ${t('bookOf')(i+1)}</div><h3>${esc(bn(i))}</h3>
  <div class="stats"><div><b>${b.ch}</b>${t('chapters')}</div><div><b>${fmt(b.v)}</b>${t('verses')}</div><div><b>${fmt(b.pc)}</b>${t('ptags')}</div><div><b>${fmt(b.lc)}</b>${t('ltags')}</div></div>
  <div class="k">${t('tradA')}${LX().colon!=null?LX().colon:' :'.slice(L=='fr'?0:1)} ${w.length?esc(w.join(LS())):t('unknown')} <span style="opacity:.8">${t('debated')}</span></div>
- <div class="ctl"><button class="btn pri" data-go="${i}:1">${t('read')} ${esc(bn(i))}</button><button class="btn" id="bmap">${t('onmap')}</button></div></div>
+ <div class="ctl"><button class="btn" id="bmap">${t('onmap')}</button></div></div>
  <div><div class="k" style="margin-bottom:4px">${t('mostP')}</div>${b.top.map(p=>chip(p)).join('')}</div>`;
  $('#bmap').onclick=()=>{$('#mfilter').value='b'+i;CURVB=null;drawMap();goHash('map')};
 }
 
 /* ---------- reader ---------- */
 const TXT={},LT={};let RB=0,RC=1;
+const LAST={};let HL=false;
+function savePos(){try{document.cookie='vbpos='+encodeURIComponent(JSON.stringify({b:RB,c:LAST}))+';max-age=31536000;path=/;SameSite=Lax'}catch(e){}}
+function loadPos(){try{const m=document.cookie.match(/(?:^|; )vbpos=([^;]*)/);if(!m)return;const o=JSON.parse(decodeURIComponent(m[1]));if(o.c&&typeof o.c=='object')for(const k in o.c){const b=+k,c=+o.c[k];if(Number.isInteger(b)&&b>=0&&b<BK.length&&Number.isInteger(c)&&c>=1&&c<=BK[b].ch)LAST[b]=c}if(Number.isInteger(o.b)&&LAST[o.b]){CB=RB=o.b;RC=LAST[o.b]}}catch(e){}}
 const CHK=[0,0,1,1,1,2,2,2,2,2,3,3,3,4,4,4,4,4,5,5,5,5,6,6,6,7,7,7,7,7,7,7,7,7,7,7,7,7,7,8,8,8,8,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9,9];const CHP={};
 function chunk(dir,b){const k=dir+'/'+CHK[b];return CHP[k]??=fetch(`${ROOT}data/${dir}/c${CHK[b]}.json`).then(r=>{if(!r.ok)throw 0;return r.json()}).catch(e=>{delete CHP[k];throw e})}
 async function loadBook(b){if(!TXT[b])Object.assign(TXT,await chunk('text',b));if(L!='en'&&!(LT[L]&&LT[L][b])){const l=L;Object.assign(LT[l]??={},await chunk(l,b))}return TXT[b]}
@@ -498,7 +504,7 @@ if(document.fonts&&document.fonts.ready)document.fonts.ready.then(fitRead);
 addEventListener('resize',()=>{clearTimeout(RDT);RDT=setTimeout(fitRead,150)});
 document.body.addEventListener('click',e=>{const b=e.target.closest('.rd-more');if(!b)return;RDX=!RDX;fitRead();if(!RDX)document.getElementById('text').scrollIntoView({block:'start',behavior:'smooth'})});
 async function openRead(b,c,jump){
- RB=b;RC=c;if(jump)RDX=false;$('#rbook').value=b;if(jump)goHash('read');
+ RB=b;RC=c;LAST[b]=c;if(b!=CB)showBook(b);savePos();if(jump)RDX=false;if(jump)goHash('read');
  const rows=await loadBook(b);if(RB!=b||RC!=c)return;const zt=L!='en'&&Z?LT[L][b]:null;
  const per={};rows.forEach(r=>{(per[r[0]]=per[r[0]]||new Set());r[3].forEach(p=>per[r[0]].add(p))});
  const mx=Math.max(1,...Object.values(per).map(s=>s.size));
