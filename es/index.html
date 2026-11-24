@@ -629,7 +629,11 @@ function goHash(h){if(location.hash==='#'+h){const e=document.getElementById(h);
 function fixNav(){const n=document.querySelector('nav.top');if(n)document.documentElement.style.scrollPaddingTop=(n.offsetHeight+8)+'px'}
 addEventListener('resize',fixNav);
 function syncUrl(){try{if(!/^((www\.)?visiblebible\.org|localhost|127\.0\.0\.1)$/.test(location.hostname))return;const q=L=='en'?'/':'/'+L+'/';if(location.pathname!==q&&location.pathname!==q+'index.html')history.replaceState(null,'',q+location.search+location.hash)}catch(e){}}
-function applyStatic(){syncUrl();$('#srcs').innerHTML=SRCS.map(([l,t])=>`<li><b>${esc(l)}</b> · <span dir="auto">${esc(t)}</span></li>`).join('')+'<li><b>Natural Earth</b></li>';
+let CARDS=null;
+function syncMeta(){const go=C=>{const c=C[L]||C.en;if(!c)return;const set=(sel,a,v)=>{const e=document.querySelector(sel);if(e&&v!=null)e.setAttribute(a,v)};
+ set('meta[name="description"]','content',c.d);set('link[rel="canonical"]','href',c.u);set('meta[property="og:url"]','content',c.u);set('meta[property="og:title"]','content',c.ot);set('meta[property="og:description"]','content',c.od);set('meta[property="og:image"]','content',c.oi);set('meta[property="og:image:alt"]','content',c.oa);set('meta[name="twitter:title"]','content',c.tt);set('meta[name="twitter:description"]','content',c.td);set('meta[name="twitter:image"]','content',c.ti)};
+ if(CARDS)go(CARDS);else fetch(ROOT+'data/cards.json').then(r=>r.json()).then(C=>{CARDS=C;go(C)}).catch(()=>{})}
+function applyStatic(){syncUrl();syncMeta();$('#srcs').innerHTML=SRCS.map(([l,t])=>`<li><b>${esc(l)}</b> · <span dir="auto">${esc(t)}</span></li>`).join('')+'<li><b>Natural Earth</b></li>';
  document.documentElement.dir=LX().rtl?'rtl':'ltr';document.documentElement.lang=(LP[L]&&LP[L].html)||{zh:'zh-CN',fr:'fr',es:'es'}[L]||'en';document.title=(LP[L]&&LP[L].title)||{zh:'看得见的圣经 — 地图、图表与时间线中的圣经',zht:'看得見的聖經 — 地圖、圖表與時間軸中的聖經',fr:'La Bible visible — la Bible en cartes, graphiques et chronologies',es:'La Biblia visible — la Biblia en mapas, gráficos y cronologías'}[L]||'The Visible Bible — the Bible in maps, charts and timelines';
  document.querySelectorAll('[data-i]').forEach(el=>{const k=el.dataset.i;if(!(k in EN))EN[k]=el.innerHTML;el.innerHTML=L!='en'&&S[L]&&S[L][k]?S[L][k]:EN[k]});document.querySelectorAll('a[href="feedback.html"]').forEach(a=>a.href=ROOT+'feedback.html');
  $('#lang').value=L;$('#psearch').placeholder=t('search');const tsx=k=>(L!='en'&&S[L]&&S[L][k])||t(k);$('#msearch').placeholder=tsx('sp');$('#esearch').placeholder=tsx('se');

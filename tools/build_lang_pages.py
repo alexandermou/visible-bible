@@ -9,6 +9,11 @@ def one(pat,new,s):
     s2,n=re.subn(pat,lambda m:new,s,count=1,flags=re.S)
     assert n==1,pat
     return s2
+import json
+def grab(s):
+    g=lambda pat:html.unescape(re.search(pat,s,re.S).group(1))
+    return {'t':g(r'<title>(.*?)</title>'),'d':g(r'<meta name="description" content="(.*?)">'),'u':g(r'<link rel="canonical" href="(.*?)">'),'ot':g(r'<meta property="og:title" content="(.*?)">'),'od':g(r'<meta property="og:description" content="(.*?)">'),'oi':g(r'<meta property="og:image" content="(.*?)">'),'oa':g(r'<meta property="og:image:alt" content="(.*?)">'),'tt':g(r'<meta name="twitter:title" content="(.*?)">'),'td':g(r'<meta name="twitter:description" content="(.*?)">'),'ti':g(r'<meta name="twitter:image" content="(.*?)">')}
+CD={'en':grab(src)}
 for code,(hl,loc,name,tag,stats,title,ogt,desc,rtl) in CARDS.items():
     d=f'https://visiblebible.org/{code}/'; img=f'https://visiblebible.org/og-{code}.png'
     s=src
@@ -28,6 +33,8 @@ for code,(hl,loc,name,tag,stats,title,ogt,desc,rtl) in CARDS.items():
     s=s.replace('url(fonts/','url(../fonts/')
     os.makedirs(code,exist_ok=True)
     open(f'{code}/index.html','w',encoding='utf-8').write(s)
+    CD[code]=grab(s)
+open('data/cards.json','w',encoding='utf-8').write(json.dumps(CD,ensure_ascii=False,separators=(',',':')))
 # sitemap
 urls=['','feedback.html']+[c+'/' for c in CARDS]
 alts=''.join(f'<xhtml:link rel="alternate" hreflang="{h}" href="https://visiblebible.org/{p}"/>' for h,p in [('en',''),('x-default','')]+[({'zh':'zh-Hans','zht':'zh-Hant'}.get(c,c),c+'/') for c in CARDS])
