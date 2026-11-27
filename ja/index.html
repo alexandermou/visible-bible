@@ -296,7 +296,7 @@ nav.top a{color:#fff;text-decoration:none;padding:14px 10px;white-space:nowrap;f
 .legend i{display:inline-block;width:11px;height:11px;border-radius:2px;margin-right:6px;vertical-align:-1px}
 .hero .legend{color:#d3d9ea}
 .bookcard{margin-top:22px;background:#0f1d45;border:1px solid #2d3f78;border-radius:10px;padding:18px 20px;display:grid;gap:8px 28px;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr)}
-.ctl.bsel{margin:18px 0 6px}.rbname{flex:0 0 100%;font-size:26px;line-height:1.2;margin:0 0 2px}.bsel label{font-weight:600;font-size:18px}.bsel+.bookcard{margin-top:0}
+.ctl.bsel{margin:18px 0 6px}.rbname{flex:0 0 100%;font-size:26px;line-height:1.2;margin:0 0 2px}.bsel label{font-weight:600;font-size:18px}.ctl.bsel{flex-wrap:nowrap}.bsel select{min-width:0}.bsel+.bookcard{margin-top:0}
 .bookcard h3{color:#fff;margin:0}.bookcard .k{color:#b9c2dc;font-size:14px}
 .stats{display:flex;flex-wrap:wrap;gap:6px 22px;margin:6px 0}.stats div{font-size:13px;color:#b9c2dc}.stats b{display:block;font-size:24px;color:#fff;font-family:"Cormorant Garamond",serif}
 @media(max-width:700px){.bookcard{grid-template-columns:minmax(0,1fr)}}
@@ -416,7 +416,7 @@ footer{background:var(--lapis);color:#d3d9ea;font-size:14px}footer a{color:var(-
 <p class="lead" data-i="lead">66 books, 1,189 chapters, 31,102 verses, about 3,000 named people and 1,200 mapped places. Each bar below is one book, drawn to its true length. Tap one to start.</p>
 <div class="shelf" id="shelf"><div><h4 data-i="ot">Old Testament · 39 books · 23,145 verses</h4><div class="hbs" id="shOT" role="list"></div></div><div><h4 data-i="nt">New Testament · 27 books · 7,957 verses</h4><div class="hbs" id="shNT" role="list"></div></div></div>
 <ul class="legend" id="divleg"></ul>
-<div class="ctl bsel"><label for="bsel" id="bsellab">Read</label><select id="bsel" aria-label="Book"></select></div>
+<div class="ctl bsel"><label for="bsel" id="bsellab">Select &amp; Read</label><select id="bsel" aria-label="Book"></select></div>
 <div class="bookcard" id="bookcard" aria-live="polite"></div>
 </div></section>
 
@@ -519,14 +519,14 @@ mh:'事情发生在哪里',mp:'1,263个已知或推测位置的地点。圆圈�
 pah:'值得探索的规律',pap:'把整本书摊开来看时，一些显眼的现象。每一条都能打开对应的视图。',
 ah:'关于本站',a1:'数据：Robert Rouse 的开放数据集 <a href="https://github.com/robertrouse/theographic-bible-metadata">Theographic Bible Metadata</a>（CC BY-SA 4.0），也就是 <a href="https://viz.bible">viz.bible</a> 背后的数据。各语言使用的经文：',a3:'各语言版本的制作方式：界面、书卷名、时期和事件标题借助 AI 翻译，其中中文、法文和西班牙文版本核对得比其他语言多，其他语言尚未经过母语者的全面审校。人名和地名由程序从各语言的经文中自动匹配，可能有错；如发现错误，欢迎反馈。中文有人工撰写的人物与地点简介（约 200 位人物、64 个地点），法文和西班牙文也有（92 位人物、16 个地点，另有标注为机器翻译的内容）；其他语言显示根据数据生成的简短介绍，英文原文可以展开阅读。土耳其文经文只包含旧约的一部分，缺少的经节以英文显示。“各卷书中的词语与主题”在所有语言中都按英文措辞计数。',
 a2:'数据须知：标注由程序自动生成并经人工检查，个别有误。“雅各（以色列）”排名很高，部分原因是“以色列”这个民族也被标到了他名下；一些民族（如摩押、米甸）以其祖先的名字作为人物出现。许多古代地点的位置并不确定。本站把圣经作为文化和历史文献来呈现，不持任何宗教立场。'};
-const T={en:{verses:'verses',chapters:'chapters',ptags:'people tags',ltags:'place tags',tradA:'Traditionally attributed to',unknown:'unknown',debated:'(authorship is debated by scholars)',read:'Read',onmap:'Its places on the map',mostP:'Most-mentioned people',
+const T={en:{verses:'verses',chapters:'chapters',ptags:'people tags',ltags:'place tags',tradA:'Traditionally attributed to',unknown:'unknown',debated:'(authorship is debated by scholars)',read:'Select & Read',onmap:'Its places on the map',mostP:'Most-mentioned people',
  testOT:'Old Testament',testNT:'New Testament',bookOf:(i)=>`book ${i} of 66`,noP:'No named people in this chapter.',noL:'No named places in this chapter.',chT:(c,n)=>`Chapter ${c}: ${n} named people`,
  search:'Find anyone, e.g. Ruth, Herod, Mary',sp:'Find a place, e.g. Jerusalem, Egypt, Babylon',se:'Find an event, e.g. Exodus from Egypt, The Great Flood, Tower of Babel',nomatch:'No match.',mostly:e=>`mostly in the ${e.toLowerCase()} era`,trad:(a,b)=>`traditional dates ${a}${b?' to '+b:''}`,where:'Where in the Bible they appear',
  fam:['Father','Mother','Spouses or partners','Siblings','Children'],more:n=>`+${n} more`,notNet:'Not among the 160 people in the network.',bioNote:'',
  all:'All eras',partOf:'part of',evN:n=>`${n} events`,whole:'Whole Bible',ot:'Old Testament',nt:'New Testament',types:['City / town','Region / people','Water','Mountain, valley, landmark','Other'],
  noLoc:'This place has no known location in the dataset.',mostIn:'Mentioned most in',evHere:'Events here',noMap:'No mapped places for this choice',years:n=>`${n} years`,fail:'Could not load the data. Try reloading.',
  lab:{City:'City',Region:'Region',Water:'Water',Mountain:'Mountain',Valley:'Valley',Landmark:'Landmark',Island:'Island',Other:'Other'},gl:'Genesis',ml:'Malachi | Matthew',rl:'Revelation'},
-zh:{verses:'节',chapters:'章',ptags:'人物标注',ltags:'地点标注',tradA:'传统上认为作者是',unknown:'不详',debated:'（学者对作者问题有争议）',read:'阅读',onmap:'在地图上看它的地点',mostP:'提及最多的人物',
+zh:{verses:'节',chapters:'章',ptags:'人物标注',ltags:'地点标注',tradA:'传统上认为作者是',unknown:'不详',debated:'（学者对作者问题有争议）',read:'选择并阅读',onmap:'在地图上看它的地点',mostP:'提及最多的人物',
  testOT:'旧约',testNT:'新约',bookOf:(i)=>`第${i}卷，共66卷`,noP:'本章没有出现有名字的人物。',noL:'本章没有出现有名字的地点。',chT:(c,n)=>`第${c}章：${n}个人物`,
  search:'搜索人物，如：路得、希律、马利亚',nomatch:'没有找到。',mostly:e=>`主要出现在“${e}”时期`,trad:(a,b)=>`传统年代 ${a}${b?'至'+b:''}`,where:'在圣经各卷中出现的分布',
  fam:['父亲','母亲','配偶','兄弟姐妹','子女'],more:n=>`另有${n}人`,notNet:'不在网络图的160人之中。',bioNote:'英文原文',
@@ -555,7 +555,7 @@ mh:'Dónde ocurre',mp:'1263 lugares con ubicación conocida o propuesta. El tama
 pah:'Patrones para explorar',pap:'Lo que destaca cuando se extiende todo el texto. Cada tarjeta abre la vista que lo muestra.',
 ah:'Acerca de este sitio',a1:'Datos: <a href="https://github.com/robertrouse/theographic-bible-metadata">Theographic Bible Metadata</a> de Robert Rouse (CC BY-SA 4.0), el conjunto de datos detrás de <a href="https://viz.bible">viz.bible</a>. Textos bíblicos usados en cada idioma:',a3:'Cómo se hizo cada versión: la interfaz, los nombres de los libros, las épocas y los títulos de acontecimientos se tradujeron con ayuda de IA; las versiones en chino, francés y español se han revisado más que las demás, que aún no han sido revisadas a fondo por hablantes nativos. Los nombres de personas y lugares se asignan automáticamente a partir del texto bíblico de cada idioma, así que algunos pueden ser incorrectos; si encuentras un error, envíanos tus comentarios. Hay fichas escritas a mano en chino (unos 200 personajes y 64 lugares), francés y español (92 personajes y 16 lugares, además de traducciones automáticas señaladas); en los demás idiomas se muestra un breve resumen generado a partir de los datos, con el original en inglés a un toque. El texto turco solo cubre parte del Antiguo Testamento, así que los versículos que faltan se muestran en inglés. Los recuentos de «Palabras y temas» usan el texto inglés en todos los idiomas.',
 a2:'Conviene saber: las etiquetas son automáticas y revisadas a mano, y algunas fallan. «Jacob (Israel)» aparece muy arriba en parte porque se le atribuye la nación «Israel», y algunos pueblos (Moab, Madián) aparecen como personas con el nombre de su antepasado. La ubicación de muchos lugares antiguos es incierta. Este sitio presenta la Biblia como documento cultural e histórico, sin tomar posición religiosa.'};
-const TFR={verses:'versets',chapters:'chapitres',ptags:'mentions de personnes',ltags:'mentions de lieux',tradA:'Attribué traditionnellement à',unknown:'inconnu',debated:'(l’auteur est discuté par les spécialistes)',read:'Lire',onmap:'Ses lieux sur la carte',mostP:'Personnages les plus cités',
+const TFR={verses:'versets',chapters:'chapitres',ptags:'mentions de personnes',ltags:'mentions de lieux',tradA:'Attribué traditionnellement à',unknown:'inconnu',debated:'(l’auteur est discuté par les spécialistes)',read:'Choisir et lire',onmap:'Ses lieux sur la carte',mostP:'Personnages les plus cités',
  testOT:'Ancien Testament',testNT:'Nouveau Testament',bookOf:(i)=>`livre ${i} sur 66`,noP:'Aucune personne nommée dans ce chapitre.',noL:'Aucun lieu nommé dans ce chapitre.',chT:(c,n)=>`Chapitre ${c} : ${n} personnes nommées`,
  search:'Chercher quelqu’un : Ruth, Hérode, Marie…',nomatch:'Aucun résultat.',mostly:e=>`surtout à l’époque « ${e} »`,trad:(a,b)=>`dates traditionnelles ${a}${b?' – '+b:''}`,where:'Où dans la Bible',
  fam:['Père','Mère','Conjoints','Frères et sœurs','Enfants'],more:n=>`+${n} autres`,notNet:'Ne fait pas partie des 160 personnes du réseau.',bioNote:'Texte original en anglais',mt:'Traduction automatique de l’anglais',
@@ -564,7 +564,7 @@ const TFR={verses:'versets',chapters:'chapitres',ptags:'mentions de personnes',l
  lab:{City:'Ville',Region:'Région',Water:'Eau',Mountain:'Montagne',Valley:'Vallée',Landmark:'Repère',Island:'Île',Other:'Autre'},gl:'Genèse',ml:'Malachie | Matthieu',rl:'Apocalypse',
  sumP:(n,v,b,f,m,p,c,k)=>`${n} est nommé(e) dans ${v} verset${v>1?'s':''}, surtout dans ${b}.`+(f?` Père : ${f}.`:'')+(m?` Mère : ${m}.`:'')+(p?` Conjoint(s) : ${p}.`:'')+(c?` ${k} enfant${k>1?'s':''}, dont ${c}.`:''),
  sumL:(n,ty,v,b)=>`${n} (${ty}) est cité dans ${v} verset${v>1?'s':''}, surtout dans ${b}.`,noLocBio:'pas encore de notice en français',ch:c=>`${c}`};
-const TES={verses:'versículos',chapters:'capítulos',ptags:'menciones de personas',ltags:'menciones de lugares',tradA:'Atribuido tradicionalmente a',unknown:'desconocido',debated:'(la autoría se discute entre los especialistas)',read:'Leer',onmap:'Sus lugares en el mapa',mostP:'Personajes más mencionados',
+const TES={verses:'versículos',chapters:'capítulos',ptags:'menciones de personas',ltags:'menciones de lugares',tradA:'Atribuido tradicionalmente a',unknown:'desconocido',debated:'(la autoría se discute entre los especialistas)',read:'Elegir y leer',onmap:'Sus lugares en el mapa',mostP:'Personajes más mencionados',
  testOT:'Antiguo Testamento',testNT:'Nuevo Testamento',bookOf:(i)=>`libro ${i} de 66`,noP:'No hay personas con nombre en este capítulo.',noL:'No hay lugares con nombre en este capítulo.',chT:(c,n)=>`Capítulo ${c}: ${n} personas con nombre`,
  search:'Busca a alguien: Rut, Herodes, María…',nomatch:'Sin resultados.',mostly:e=>`sobre todo en la época «${e}»`,trad:(a,b)=>`fechas tradicionales ${a}${b?' – '+b:''}`,where:'Dónde aparece en la Biblia',
  fam:['Padre','Madre','Cónyuges','Hermanos','Hijos'],more:n=>`+${n} más`,notNet:'No está entre las 160 personas de la red.',bioNote:'Texto original en inglés',mt:'Traducción automática del inglés',
